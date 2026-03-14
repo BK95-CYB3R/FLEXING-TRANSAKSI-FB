@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Transaksi HD - Pablo Escobar</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5; 
+            color: #050505;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px; 
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 380px; 
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #transaction-display {
+            padding: 16px 14px; 
+            background-color: #ffffff; 
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px; 
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            font-size: 18px; 
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .download-btn {
+            font-size: 14px; 
+            color: #0064d1; 
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px; 
+        }
+        .transaction-item:last-child { margin-bottom: 0; }
+
+        /* WADAH IKON DEFAULT (Item 1) */
+        .icon-wrapper {
+            width: 26px; 
+            height: 26px; 
+            margin-right: 12px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* WADAH IKON BINTANG (DIPERBESAR SEDIKIT) */
+        .star-icon-wrapper {
+            width: 30px; 
+            height: 30px; 
+            margin-right: 10px; 
+            margin-top: -1px; 
+        }
+
+        .icon-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .details { flex-grow: 1; padding-right: 10px; }
+        .name { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: #050505; line-height: 1.2; }
+        .description { font-size: 13px; color: #65676B; line-height: 1.2; margin-bottom: 2px; }
+        .date { font-size: 12px; color: #8A8D91; line-height: 1.2; }
+
+        .amount-info { text-align: right; flex-shrink: 0; }
+        .amount { font-size: 16px; font-weight: 600; margin-bottom: 2px; color: #050505; line-height: 1.2; }
+        .status { font-size: 13px; color: #65676B; font-weight: 600; line-height: 1.2; }
+
+        /* Panel Kontrol */
+        #control-panel { padding: 16px 14px; background-color: #f7f8fa; border-top: 1px solid #ddd; }
+        #control-panel h2 { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #333; }
+        
+        .item-section {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .item-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; color: #555; margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px; font-size: 12px; border: 1px solid #ccc; border-radius: 6px; color: #050505; background-color: #fff;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #0064d1; box-shadow: 0 0 0 2px rgba(0, 100, 209, 0.2); }
+
+        /* Flex layout */
+        .flex-row { display: flex; gap: 8px; }
+        .col-month { flex: 1.2; }
+        .col-main { flex: 2; }
+        .col-dec { flex: 0.8; }
+        .col-name { flex: 2; }
+        .col-status { flex: 1; }
+
+        .save-btn {
+            width: 100%; padding: 10px; background-color: #0064d1; color: #ffffff; font-size: 13px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; margin-top: 12px;
+        }
+        .save-btn:hover { background-color: #0056b3; }
+        .save-btn:active { transform: translateY(1px); }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    
+    <div id="transaction-display">
+        <div class="header">
+            <div class="header-left">Semua</div>
+            <a href="#" class="download-btn">Unduh</a>
+        </div>
+
+        <div class="transaction-item">
+            <div class="icon-wrapper">
+                <img id="icon-1" src="icon-monetisasi.png" alt="Icon Monetisasi">
+            </div>
+            <div class="details">
+                <div id="name-1" class="name">Pablo Escobar</div>
+                <div class="description">Monetisasi konten Facebook</div>
+                <div id="date-1" class="date">28 Feb 2026</div>
+            </div>
+            <div class="amount-info">
+                <div id="amount-1" class="amount">US$5,39</div>
+                <div id="status-1" class="status">Diproses</div>
+            </div>
+        </div>
+
+        <div class="transaction-item">
+            <div class="icon-wrapper star-icon-wrapper">
+                <img id="icon-2" src="icon-bintang.png" alt="Icon Bintang">
+            </div>
+            <div class="details">
+                <div id="name-2" class="name">Pablo Escobar</div>
+                <div class="description">Facebook Stars (Perangkat Seluler)</div>
+                <div id="date-2" class="date">28 Feb 2026</div>
+            </div>
+            <div class="amount-info">
+                <div id="amount-2" class="amount">US$1.272,30</div>
+                <div id="status-2" class="status">Diproses</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="control-panel">
+        <h2>Panel Kontrol</h2>
+        
+        <div class="item-section">
+            <div class="flex-row">
+                <div class="form-group col-name">
+                    <label>Nama 1</label>
+                    <input type="text" id="input-name-1" value="Pablo Escobar">
+                </div>
+                <div class="form-group col-status">
+                    <label>Status 1</label>
+                    <select id="input-status-1">
+                        <option value="diproses" selected>Diproses</option>
+                        <option value="dibayar">Dibayar</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex-row">
+                <div class="form-group col-month">
+                    <label>Bulan 1</label>
+                    <select id="input-month-1">
+                        <option value="0">Jan</option><option value="1" selected>Feb</option><option value="2">Mar</option>
+                        <option value="3">Apr</option><option value="4">Mei</option><option value="5">Jun</option>
+                        <option value="6">Jul</option><option value="7">Agu</option><option value="8">Sep</option>
+                        <option value="9">Okt</option><option value="10">Nov</option><option value="11">Des</option>
+                    </select>
+                </div>
+                <div class="form-group col-main">
+                    <label>Nominal 1</label>
+                    <input type="text" id="input-amount-main-1" value="5">
+                </div>
+                <div class="form-group col-dec">
+                    <label>Koma (,)</label>
+                    <input type="text" id="input-amount-dec-1" value="39" maxlength="2">
+                </div>
+            </div>
+        </div>
+
+        <div class="item-section">
+            <div class="flex-row">
+                <div class="form-group col-name">
+                    <label>Nama 2</label>
+                    <input type="text" id="input-name-2" value="Pablo Escobar">
+                </div>
+                <div class="form-group col-status">
+                    <label>Status 2</label>
+                    <select id="input-status-2">
+                        <option value="diproses" selected>Diproses</option>
+                        <option value="dibayar">Dibayar</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex-row">
+                <div class="form-group col-month">
+                    <label>Bulan 2</label>
+                    <select id="input-month-2">
+                        <option value="0">Jan</option><option value="1" selected>Feb</option><option value="2">Mar</option>
+                        <option value="3">Apr</option><option value="4">Mei</option><option value="5">Jun</option>
+                        <option value="6">Jul</option><option value="7">Agu</option><option value="8">Sep</option>
+                        <option value="9">Okt</option><option value="10">Nov</option><option value="11">Des</option>
+                    </select>
+                </div>
+                <div class="form-group col-main">
+                    <label>Nominal 2</label>
+                    <input type="text" id="input-amount-main-2" value="1.272">
+                </div>
+                <div class="form-group col-dec">
+                    <label>Koma (,)</label>
+                    <input type="text" id="input-amount-dec-2" value="30" maxlength="2">
+                </div>
+            </div>
+        </div>
+
+        <button id="save-hd-btn" class="save-btn">Simpan Gambar HD</button>
+    </div>
+
+</div>
+
+<script>
+    // 1. Sinkronisasi Nama
+    const nameInputs = { 'input-name-1': 'name-1', 'input-name-2': 'name-2' };
+    for (const [inputId, targetId] of Object.entries(nameInputs)) {
+        document.getElementById(inputId).addEventListener('input', function() {
+            document.getElementById(targetId).textContent = this.value;
+        });
+    }
+
+    // 2. Sinkronisasi Warna & Teks Status
+    function setupStatusLogic(selectId, targetId) {
+        const selectEl = document.getElementById(selectId);
+        const targetEl = document.getElementById(targetId);
+
+        function updateStatus() {
+            if (selectEl.value === 'diproses') {
+                targetEl.textContent = 'Diproses';
+                targetEl.style.color = '#65676B'; 
+            } else if (selectEl.value === 'dibayar') {
+                targetEl.textContent = 'Dibayar';
+                targetEl.style.color = '#31A24C'; 
+            }
+        }
+
+        selectEl.addEventListener('change', updateStatus);
+        updateStatus(); 
+    }
+    setupStatusLogic('input-status-1', 'status-1');
+    setupStatusLogic('input-status-2', 'status-2');
+
+    // 3. Format Otomatis Tanggal
+    const currentYear = new Date().getFullYear();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    function updateDateDisplay(selectElement, targetId) {
+        const monthIndex = parseInt(selectElement.value);
+        const lastDay = new Date(currentYear, monthIndex + 1, 0).getDate(); 
+        document.getElementById(targetId).textContent = `${lastDay} ${monthNames[monthIndex]} ${currentYear}`;
+    }
+
+    const monthSelects = { 'input-month-1': 'date-1', 'input-month-2': 'date-2' };
+    for (const [selectId, targetId] of Object.entries(monthSelects)) {
+        const selectElement = document.getElementById(selectId);
+        updateDateDisplay(selectElement, targetId);
+        selectElement.addEventListener('change', function() { updateDateDisplay(this, targetId); });
+    }
+
+    // 4. Logika Format Nominal & Koma Terpisah
+    function setupAmountLogic(mainId, decId, targetId) {
+        const mainInput = document.getElementById(mainId);
+        const decInput = document.getElementById(decId);
+        const targetDisplay = document.getElementById(targetId);
+
+        function renderAmount() {
+            let rawMain = mainInput.value.replace(/[^\d]/g, '');
+            let rawDec = decInput.value.replace(/[^\d]/g, '').substring(0, 2);
+
+            if (rawMain !== "") {
+                mainInput.value = new Intl.NumberFormat('id-ID').format(rawMain);
+            } else {
+                mainInput.value = "";
+            }
+            decInput.value = rawDec;
+
+            let displayMain = rawMain === "" ? "0" : new Intl.NumberFormat('id-ID').format(rawMain);
+            let displayDec = rawDec === "" ? "00" : rawDec;
+            
+            targetDisplay.textContent = `US$${displayMain},${displayDec}`;
+        }
+
+        mainInput.addEventListener('input', renderAmount);
+        decInput.addEventListener('input', renderAmount);
+
+        decInput.addEventListener('blur', function() {
+            if (this.value.length === 1) this.value += "0";
+            else if (this.value.length === 0) this.value = "00";
+            renderAmount();
+        });
+
+        mainInput.addEventListener('blur', function() {
+            if (this.value === "") this.value = "0";
+            renderAmount();
+        });
+    }
+
+    setupAmountLogic('input-amount-main-1', 'input-amount-dec-1', 'amount-1');
+    setupAmountLogic('input-amount-main-2', 'input-amount-dec-2', 'amount-2');
+
+    // 5. Simpan Gambar HD
+    document.getElementById('save-hd-btn').addEventListener('click', function() {
+        const transactionDisplay = document.getElementById('transaction-display');
+        document.body.style.backgroundColor = '#ffffff';
+        transactionDisplay.parentElement.style.boxShadow = 'none';
+        transactionDisplay.parentElement.style.borderRadius = '0';
+
+        html2canvas(transactionDisplay, { scale: 2, useCORS: true }).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'transaksi_facebook_hd.png'; 
+            link.click();
+
+            document.body.style.backgroundColor = '#f0f2f5';
+            transactionDisplay.parentElement.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            transactionDisplay.parentElement.style.borderRadius = '12px';
+        });
+    });
+</script>
+
+</body>
+</html>
